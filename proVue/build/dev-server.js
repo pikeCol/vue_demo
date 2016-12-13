@@ -21,21 +21,21 @@ var goods = appData.goods
 var ratings = appData.ratings 
 
 var apiRouters = express.Router()
-apiRouters.get('./seller', function (req, res){
+apiRouters.get('/seller', function (req, res){
   res.json({
     errno: 0,
     data: seller
   })
 })
 
-apiRouters.get('./goods', function (req, res) {
+apiRouters.get('/goods', function (req, res) {
   res.json({
     errno: 0,
     data: goods
   })
 })
 
-apiRouters.get('./ratings', function () {
+apiRouters.get('/ratings', function () {
   res.josn({
     errno: 0,
     data: ratings
