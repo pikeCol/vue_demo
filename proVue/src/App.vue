@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-header></v-header>
-    <div class="tab">
+    <div class="tab border-1px">
       <div class="tab-item">
         <a v-link="{path:'/goods'}">商品</a>
       </div>
@@ -19,6 +19,14 @@
 <script type="text/ecmascript-6">
   import header from './components/header/header';
   export default {
+    data () {
+      return {
+        sellr: {}
+      };
+    },
+    created() {
+
+    },
     components: {
       'v-header': header
     }
@@ -28,11 +36,19 @@
 <style lang="stylus" rel="stylesheet/stylus">
   .tab 
     display: flex
+    border-1px(rgba(7, 17, 27, 0.1))
     width: 100%
-    height: 40px
-    line-height: 40px
     .tab-item
       flex: 1
+      line-height: 40px
+      height: 40px
       text-align: center
       cursor: pointer
+      & > a
+        display: block
+        height: 40px
+        font-size: 14px
+        color: rgb(77, 85, 93)
+        &.active
+          color: rgb(240, 20, 20)
 </style>
