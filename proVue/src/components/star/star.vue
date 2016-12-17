@@ -5,7 +5,7 @@
     </span>
   </div >
 </template>
-<script type="text/ecmascript-6">
+<script>
   const LENGTH = 5;
   const CLS_ON = 'on';
   const CLS_HALF = 'half';

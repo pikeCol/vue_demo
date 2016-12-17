@@ -16,7 +16,7 @@
   </div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
   import header from './components/header/header';
   const ERR_OK = 0;
   export default {
@@ -40,6 +40,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import './common/stylus/mixin.styl'
   .tab 
     display: flex
     border-1px(rgba(7, 17, 27, 0.1))
