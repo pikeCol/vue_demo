@@ -35,11 +35,13 @@
         </li>
       </ul>
     </div>
+    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
+  import shopcart from 'components/shopcart/shopcart';
   const ERR_OK = 0;
 
   export default {
@@ -52,7 +54,7 @@
       return {
         goods: {},
         listHeight: [],
-        srollY: 0
+        scrollY: 0
       };
     },
     computed: {
@@ -108,10 +110,14 @@
           return;
         };
         console.log(this.currentIndex);
+        console.log(index);
         let foodList = this.$els.foodsWrapper.getElementsByClassName('food-list-hook');
         let el = foodList[index];
         this.foodsScroll.scrollToElement(el, 300);
       }
+    },
+    components: {
+      shopcart
     }
   };
 </script>
