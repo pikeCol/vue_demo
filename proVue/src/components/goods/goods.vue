@@ -29,19 +29,23 @@
                   <span class="now">¥{{food.price}}</span>
                   <span class="old" v-show="food.odlPrice">¥{{food.oldPrice}}</span>
                 </div>
+                <div class="cartctroll-wrapper">
+                  <cartctroll :food="food"></cartctroll>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
-    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
-<script type="text/ecmascript-6">
+<script type = "text/ecmascript-6" >
   import BScroll from 'better-scroll';
   import shopcart from 'components/shopcart/shopcart';
+  import cartctroll from 'components/cartctroll/cartctroll';
   const ERR_OK = 0;
 
   export default {
@@ -52,7 +56,7 @@
     },
     data () {
       return {
-        goods: {},
+        goods: [],
         listHeight: [],
         scrollY: 0
       };
@@ -67,6 +71,17 @@
           }
         }
         return 0;
+      },
+      selectFoods () {
+        let foods = [];
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              foods.push(food);
+            }
+          });
+        });
+        return foods;
       }
     },
     created () {
@@ -88,7 +103,8 @@
           click: true
         });
         this.foodsScroll = new BScroll(this.$els.foodsWrapper, {
-          probeType: 3
+          probeType: 3,
+          click: true
         });
 
         this.foodsScroll.on('scroll', (pos) => {
@@ -114,10 +130,18 @@
         let foodList = this.$els.foodsWrapper.getElementsByClassName('food-list-hook');
         let el = foodList[index];
         this.foodsScroll.scrollToElement(el, 300);
+      },
+      _drop (target) {
       }
     },
     components: {
-      shopcart
+      shopcart,
+      cartctroll
+    },
+    events: {
+      'cart.add' (target) {
+        this._drop(target);
+      }
     }
   };
 </script>
@@ -221,6 +245,10 @@
             .old
               text-decoration: line-through
               font-size: 10px
+          .cartctroll-wrapper
+            position: absolute
+            right: 0
+            bottom: 12px
             
 </style>
 
