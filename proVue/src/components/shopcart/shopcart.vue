@@ -11,7 +11,7 @@
         <div class="price" class="{'heightlight': totalCount > 0}">¥{{totalPrice}}</div>
         <div class="desc">另需配送费¥{{deliveryPrice}}元</div>
       </div>
-      <div class="content-right">
+      <div class="content-right" @click.stop.prevent="pay">
         <div class="pay" :class="payClass">
           {{payDesc}}
         </div>
@@ -22,12 +22,12 @@
         <div class="inner inner-hook"></div>
       </div>
     </div>
-    <div class="shopcart-list" trnasition="fold" v-show="listShow">
+    <div class="shopcart-list" transition="fold" v-show="listShow">
       <div class="list-header">
         <h1 class="title">购物车</h1>
-        <span class="empty">清空</span>
+        <span class="empty" @click="empty">清空</span>
       </div>
-      <div class="list-content">
+      <div class="list-content" v-el:list-content>
         <ul>
           <li class="food" v-for="food in selectFoods">
             <span class="name">{{food.name}}</span>
@@ -42,9 +42,11 @@
       </div>
     </div>
   </div>
+  <div class="list-mask" v-show="listShow" transition="fade" @click="hideList"></div>
 </template> 
 <script type = "text/ecmascript-6" >
   import cartctroll from 'components/cartctroll/cartctroll';
+  import BScroll from 'better-scroll';
   export default {
     props: {
       selectFoods: {
@@ -102,6 +104,22 @@
           return;
         }
         this.fold = !this.fold;
+      },
+      empty () {
+        this.selectFoods.forEach((food) => {
+          food.count = 0;
+        });
+      },
+      hideList () {
+        console.log(11);
+        this.fold = true;
+        return false;
+      },
+      pay () {
+        if (this.totalPrice < this.minPrice) {
+          return;
+        }
+        window.alert(`需要支付${this.totalPrice} 元`);
       }
     },
     transitions: {
@@ -181,6 +199,17 @@
           this.fold = true;
         }
         let show = !this.fold;
+        if (show) {
+          if (!this.scroll) {
+              this.$nextTick(() => {
+              this.scroll = new BScroll(this.$els.listContent, {
+                click: true
+              });
+            });
+          } else {
+            this.scroll.refresh();
+          }
+        }
         return show;
       }
     },
@@ -190,6 +219,7 @@
   };
 </script> 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import "../../common/stylus/mixin.styl"
   .shopcart
     position:fixed
     left: 0
@@ -300,7 +330,63 @@
       z-index: -1
       &.fold-transition
         transition: all 0.5s
-        transform: translate3d(0, -100%,0)
+        transform: translate3d(0,-100%,0)
       &.fold-enter, &.fold-leave
-        transform: translate3d(0, 0, 0)
+        transform: translate3d(0,0,0)
+      .list-header
+        height: 40px
+        line-height: 40px
+        padding: 0 18px
+        background: #f3f5f7
+        border-bottom: 1px solid rgba(7,17,27,0.1)
+        .title
+          float: left
+          font-size: 14px
+          color: rgb(7,17,27)
+        .empty
+          float: right
+          font-size: 12px
+          color: rgb(0,160,220)
+      .list-content
+        padding: 0 18px
+        max-height: 217px
+        background: #fff
+        overflow: hidden
+        .food
+          position: relative
+          padding: 12px 0
+          box-sizing: border-box
+          border-1px(rgba(7,17,27,0.1))
+          .name
+            line-height: 24px
+            font-size: 14px
+            color: rgb(7,17,27)
+          .price
+            position: absolute
+            right: 90px
+            bottom: 12px
+            line-height: 24px
+            font-size: 14px
+            font-weight: 700
+            color: rgb(240,20,20)
+          .cartcontroll-wrapper
+            position: absolute
+            right: 0
+            bottom: 6px
+  .list-mask
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    z-index: 6
+    backrop-filter: blur(10px)
+    &.fade-transition
+      transition: all 0.5s
+      opacity: 1
+      background: rgba(7,17,27,0.6)
+    &.fade-enter, &.fade-leave
+      opacity: 0
+      background: rgba(7,17,27,0)
+                 
 </style>
