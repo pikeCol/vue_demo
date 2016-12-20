@@ -1,6 +1,6 @@
 <template >
   <div class="shopcart">
-    <div class="content">
+    <div class="content" @click="toggleList">
       <div class="content-left">
         <div class="log-wrapper">
           <div class="logo" :class="{'heightlight': totalCount > 0}">
@@ -8,8 +8,8 @@
           </div>
           <div class="number" v-show="totalCount>0">{{totalCount}}</div>
         </div>
-        <div class="price" class="{'heightlight': totalCount > 0}">￥{{totalPrice}}</div>
-        <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
+        <div class="price" class="{'heightlight': totalCount > 0}">¥{{totalPrice}}</div>
+        <div class="desc">另需配送费¥{{deliveryPrice}}元</div>
       </div>
       <div class="content-right">
         <div class="pay" :class="payClass">
@@ -19,12 +19,32 @@
     </div>
     <div class="ball-container">
       <div v-for="ball in balls" v-show="ball.show" transition="drop" class="ball">
-        <div class="inner"></div>
+        <div class="inner inner-hook"></div>
+      </div>
+    </div>
+    <div class="shopcart-list" trnasition="fold" v-show="listShow">
+      <div class="list-header">
+        <h1 class="title">购物车</h1>
+        <span class="empty">清空</span>
+      </div>
+      <div class="list-content">
+        <ul>
+          <li class="food" v-for="food in selectFoods">
+            <span class="name">{{food.name}}</span>
+            <div class="price">
+              <span>¥{{food.price*food.count}}</span>
+            </div>
+            <div class="cartcontroll-wrapper">
+              <cartctroll :food="food"></cartctroll>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 </template> 
 <script type = "text/ecmascript-6" >
+  import cartctroll from 'components/cartctroll/cartctroll';
   export default {
     props: {
       selectFoods: {
@@ -60,12 +80,68 @@
           {
             show: false
           }
-        ]
+        ],
+        dropBalls: [],
+        fold: true
       };
     },
     methods: {
       drop (el) {
-
+        for (let i = 0; i < this.balls.length; i++) {
+          let ball = this.balls[i];
+          if (!ball.show) {
+            ball.show = true;
+            ball.el = el;
+            this.dropBalls.push(ball);
+            return;
+          }
+        }
+      },
+      toggleList () {
+        if (!this.totalCount) {
+          return;
+        }
+        this.fold = !this.fold;
+      }
+    },
+    transitions: {
+      drop: {
+        beforeEnter (el) {
+          let count = this.balls.length;
+          while (count--) {
+            let ball = this.balls[count];
+            if (ball.show) {
+              let rect = ball.el.getBoundingClientRect();
+              let x = rect.left - 32;
+              let y = -(window.innerHeight - rect.top - 22);
+              el.style.display = '';
+              el.style.webkitTransform = `translate3d(0, ${y}px, 0)`;
+              el.transform = `translate3d(0,${y}px,0)`;
+              let inner = el.getElementsByClassName('inner-hook')[0];
+              inner.style.webkitTransform = `translate3d(${x}px, 0, 0)`;
+              inner.style.transform = `translate3d(${x}px, 0, 0)`;
+            }
+          }
+        },
+        enter (el) {
+          // 触发重绘   重绘之后设置的样式才有用
+          /* eslint-disable no-unused-vars */
+          let rf = el.offsetHeight;
+          this.$nextTick(() => {
+            el.style.webkitTransform = 'translate3d(0, 0, 0)';
+              el.transform = 'translate3d(0, 0, 0)';
+              let inner = el.getElementsByClassName('inner-hook')[0];
+              inner.style.webkitTransform = 'translate3d(0, 0, 0)';
+              inner.style.transform = 'translate3d(0, 0, 0)';
+          });
+        },
+        afterEnter (el) {
+          let ball = this.dropBalls.shift();
+          if (ball) {
+            ball.show = false;
+            el.style.display = 'none';
+          }
+        }
       }
     },
     computed: {
@@ -99,7 +175,17 @@
         } else {
           return 'enough';
         }
+      },
+      listShow () {
+        if (!this.totalCount) {
+          this.fold = true;
+        }
+        let show = !this.fold;
+        return show;
       }
+    },
+    components: {
+      cartctroll
     }
   };
 </script> 
@@ -199,11 +285,22 @@
         bottom: 22px
         z-index: 222
         &.drop-transition
-          transition: all 0.4s
+          transition: all 0.4s cubic-bezier(.63,-0.27,.52,.48)
           .inner
             width: 16px
             height: 16px
             border-radius: 50%
             background: rgb(0, 160, 220)
-            transition: all 0.4s
+            transition: all 0.4s linear
+    .shopcart-list
+      position: absolute
+      left: 0
+      top: 0
+      width: 100%
+      z-index: -1
+      &.fold-transition
+        transition: all 0.5s
+        transform: translate3d(0, -100%,0)
+      &.fold-enter, &.fold-leave
+        transform: translate3d(0, 0, 0)
 </style>
