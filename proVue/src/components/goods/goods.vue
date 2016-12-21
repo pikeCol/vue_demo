@@ -14,7 +14,7 @@
         <li class="foot-list food-list-hook" v-for="item in goods">
           <h1 class="title">{{item.name}}</h1>
           <ul>
-            <li v-for="food in item.foods" class="food-item border-1px">
+            <li @click="selectFood(food,$event)" v-for="food in item.foods" class="food-item border-1px">
               <div class="icon">
                 <img width="57" height="57" :src="food.icon" alt="">
               </div>
@@ -27,10 +27,10 @@
                 </div>
                 <div class="price">
                   <span class="now">¥{{food.price}}</span>
-                  <span class="old" v-show="food.odlPrice">¥{{food.oldPrice}}</span>
+                  <span class="old" v-show="food.oldPrice">¥{{food.oldPrice}}</span>
                 </div>
                 <div class="cartctroll-wrapper">
-                  <cartctroll :food="food"></cartctroll>
+                  <cartctroll :food="food" ></cartctroll>
                 </div>
               </div>
             </li>
@@ -40,11 +40,13 @@
     </div>
     <shopcart v-ref:shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
+  <food :food="selectedFoods" v-ref:food></food>
 </template>
 
 <script type = "text/ecmascript-6" >
   import BScroll from 'better-scroll';
   import shopcart from 'components/shopcart/shopcart';
+  import food from 'components/food/food';
   import cartctroll from 'components/cartctroll/cartctroll';
   const ERR_OK = 0;
 
@@ -58,7 +60,8 @@
       return {
         goods: [],
         listHeight: [],
-        scrollY: 0
+        scrollY: 0,
+        selectedFoods: {}
       };
     },
     computed: {
@@ -125,8 +128,6 @@
         if (!event._constructed) {
           return;
         };
-        console.log(this.currentIndex);
-        console.log(index);
         let foodList = this.$els.foodsWrapper.getElementsByClassName('food-list-hook');
         let el = foodList[index];
         this.foodsScroll.scrollToElement(el, 300);
@@ -136,11 +137,19 @@
         this.$nextTick(() => {
           this.$refs.shopcart.drop(target);
         });
+      },
+      selectFood (food, event) {
+        if (!event._constructed) {
+          return;
+        }
+        this.selectedFoods = food;
+        this.$refs.food.show();
       }
     },
     components: {
       shopcart,
-      cartctroll
+      cartctroll,
+      food
     },
     events: {
       'cart.add' (target) {
@@ -249,6 +258,7 @@
             .old
               text-decoration: line-through
               font-size: 10px
+              color: rgb(147,153,159)
           .cartctroll-wrapper
             position: absolute
             right: 0
