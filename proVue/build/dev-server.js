@@ -35,8 +35,8 @@ apiRouters.get('/goods', function (req, res) {
   })
 })
 
-apiRouters.get('/ratings', function () {
-  res.josn({
+apiRouters.get('/ratings', function (req, res) {
+  res.json({
     errno: 0,
     data: ratings
   })
