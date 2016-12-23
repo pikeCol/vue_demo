@@ -27,3 +27,6 @@ npm test
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
 第一次进入 输入 '/goods' 进入商品页
+通过 http://localhost:8080/?id=124124&a=b#!/seller
+可以设置用户名实现缓存功能
+node prod.server.js  跑编译后的代码
